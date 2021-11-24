@@ -111,6 +111,24 @@ class API {
     return sendRequest("/resend-code", {}, "POST", true);
   }
 
+  // Get Comments
+  static getComments(id) {
+    return sendRequest(`/user/proposal/${id}/comments`, {}, "GET", true);
+  }
+
+   // Submit Comment
+   static submitComment(id, params = {}) {
+    return sendRequest(`/user/proposal/${id}/comments`, params, "POST", true);
+  }
+
+  static upVoteComment(id) {
+    return sendRequest(`/user/comments/${id}/up`, {}, "POST", true);
+  }
+
+  static downVoteComment(id) {
+    return sendRequest(`/user/comments/${id}/down`, {}, "POST", true);
+  }
+
   // Create Sponsor Code
   static createSponsorCode() {
     return sendRequest("/user/sponsor-code", {}, "POST", true);

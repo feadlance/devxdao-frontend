@@ -1,0 +1,16 @@
+#app-proposal-comments-section {
+    .comment {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .comment-heading {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .replies {
+        margin-left: 20px;
+    }
+}

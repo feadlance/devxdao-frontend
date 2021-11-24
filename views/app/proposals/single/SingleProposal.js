@@ -30,6 +30,7 @@ import IconEmptyDot from "../../../../public/icons/empty-dot.svg";
 import IconCheckDot from "../../../../public/icons/check-dot.svg";
 import "./single-proposal.scss";
 import Helper from "../../../../utils/Helper";
+import ProposalComments from "../../shared/proposal-comments/ProposalComments";
 
 const mapStateToProps = (state) => {
   return {
@@ -315,6 +316,15 @@ class SingleProposal extends Component {
     return <PageHeaderComponent title={title} />;
   }
 
+  // Render Comments
+  renderComments() {
+    const {proposal} = this.state;
+    
+    return (
+      <ProposalComments proposal={proposal} />
+    );
+  }
+
   // Render Detail
   renderDetail() {
     const { proposal } = this.state;
@@ -464,6 +474,7 @@ class SingleProposal extends Component {
         />
         <div className="d-flex gap-box">
           <div className="proposal-detail-box">
+            {this.renderComments()}
             {this.renderDetail()}
             {this.renderComplianceCheck()}
             {this.renderChangeContent()}
