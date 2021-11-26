@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-import moment from "moment";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -8,9 +7,7 @@ import WriteComment from "../write-comment/WriteComment";
 
 const mapStateToProps = (state) => {
     return {
-        authUser: state.global.authUser,
-        settings: state.global.settings,
-        editMode: state.admin.editMode,
+        authUser: state.global.authUser
     };
 };
 
@@ -86,11 +83,22 @@ class SingleComment extends Component {
                     {authUser?.id === comment.user_id && <button onClick={this.handleDestroy}>Delete</button>}
                 </div>
                 {displayReply && (
-                    <WriteComment proposal={proposal} parent={comment.id} getComments={getComments} handleReply={this.handleReply} />
+                    <WriteComment
+                        proposal={proposal}
+                        parent={comment.id}
+                        getComments={getComments}
+                        handleReply={this.handleReply}
+                    />
                 )}
                 <div className="replies">
                     {comment.children.map((child) => (
-                        <SingleComment key={child.id} comment={child} proposal={proposal} getComments={getComments} />
+                        <SingleComment
+                            key={child.id}
+                            comment={child}
+                            proposal={proposal}
+                            authUser={authUser}
+                            getComments={getComments}
+                        />
                     ))}
                 </div>
             </div>
@@ -99,7 +107,8 @@ class SingleComment extends Component {
 
     render() {
         const { proposal } = this.state;
-        if (!proposal || !proposal.id) return null;
+        const { authUser } = this.props;
+        if (!authUser || !authUser.id || !proposal || !proposal.id) return null;
 
         return this.renderContent();
     }
