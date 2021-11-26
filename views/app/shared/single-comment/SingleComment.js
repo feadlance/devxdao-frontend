@@ -83,7 +83,7 @@ class SingleComment extends Component {
                     <button onClick={this.handleUpVote}>Up ({comment.up_vote})</button>
                     <button onClick={this.handleDownVote}>Down ({comment.down_vote})</button>
                     <button onClick={this.handleReply}>Reply</button>
-                    {authUser?.id === comment.user_id && <button onClick={this.handleDestroy}>Reply</button>}
+                    {authUser?.id === comment.user_id && <button onClick={this.handleDestroy}>Delete</button>}
                 </div>
                 {displayReply && (
                     <WriteComment proposal={proposal} parent={comment.id} getComments={getComments} handleReply={this.handleReply} />
