@@ -116,15 +116,22 @@ class API {
     return sendRequest(`/user/proposal/${id}/comments`, {}, "GET", true);
   }
 
-   // Submit Comment
-   static submitComment(id, params = {}) {
+  // Submit Comment
+  static submitComment(id, params = {}) {
     return sendRequest(`/user/proposal/${id}/comments`, params, "POST", true);
   }
 
+  // Destroy Comment
+  static destroyComment(id) {
+    return sendRequest(`/user/comments/${id}`, {}, "DELETE", true);
+  }
+
+  // Up Vote Comment
   static upVoteComment(id) {
     return sendRequest(`/user/comments/${id}/up`, {}, "POST", true);
   }
 
+  // Down Vote Comment
   static downVoteComment(id) {
     return sendRequest(`/user/comments/${id}/down`, {}, "POST", true);
   }

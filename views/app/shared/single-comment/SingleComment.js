@@ -48,12 +48,23 @@ class SingleComment extends Component {
         });
     }
 
+    handleDestroy = () => {
+        API.destroyComment(this.props.comment.id).then((res) => {
+            if (res.success === false) {
+                alert(res.message);
+                return;
+            }
+
+            this.props.getComments();
+        });
+    }
+
     handleReply = () => {
         this.setState({ displayReply: !this.state.displayReply });
     }
 
     renderContent() {
-        const { comment, proposal, getComments } = this.props;
+        const { comment, proposal, getComments, authUser } = this.props;
         const { displayReply } = this.state;
 
         return (
@@ -72,6 +83,7 @@ class SingleComment extends Component {
                     <button onClick={this.handleUpVote}>Up ({comment.up_vote})</button>
                     <button onClick={this.handleDownVote}>Down ({comment.down_vote})</button>
                     <button onClick={this.handleReply}>Reply</button>
+                    {authUser?.id === comment.user_id && <button onClick={this.handleDestroy}>Reply</button>}
                 </div>
                 {displayReply && (
                     <WriteComment proposal={proposal} parent={comment.id} getComments={getComments} handleReply={this.handleReply} />
