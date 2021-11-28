@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 import API from "../../../../utils/API";
 import './write-comment.scss';
 
@@ -19,7 +20,14 @@ class WriteComment extends Component {
 
         this.state = {
             comment: "",
+            loading: false,
         };
+
+        this.inputRef = React.createRef();
+    }
+
+    componentDidMount() {
+        this.inputRef.current.focus();
     }
 
     handleSubmit = (e) => {
@@ -27,17 +35,20 @@ class WriteComment extends Component {
 
         const { parent, proposal, getComments, handleReply } = this.props;
 
+        this.setState({ loading: true });
+
         API.submitComment(proposal.id, {
             comment: this.state.comment,
             parent_id: parent
         }).then(() => {
-            getComments();
+            getComments().then(() => {
+                this.setState({
+                    comment: "",
+                    loading: false,
+                });
 
-            this.setState({
-                comment: ""
+                handleReply && handleReply();
             });
-
-            handleReply && handleReply();
         });
     }
 
@@ -48,10 +59,13 @@ class WriteComment extends Component {
     }
 
     render() {
+        const { loading, comment } = this.state;
         return (
             <form onSubmit={this.handleSubmit}>
-                <textarea className="comment-input" value={this.state.comment} onChange={this.handleChange} placeholder="Reply"></textarea>
-                <button className="comment-btn" type="submit">Send</button>
+                <textarea ref={this.inputRef} className="comment-input" value={comment} onChange={this.handleChange} placeholder="Reply"></textarea>
+                <button className="comment-btn" type="submit" disabled={loading}>
+                    {loading ? <BeatLoader size={8} color="#fff" /> : 'Reply'}
+                </button>
             </form>
         );
     }

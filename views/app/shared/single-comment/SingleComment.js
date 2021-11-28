@@ -1,9 +1,13 @@
 /* eslint-disable no-undef */
+import moment from "moment";
 import React, { Component } from "react";
+import { ChevronDown, ChevronUp, MessageCircle, Trash } from "react-feather";
+import BeatLoader from "react-spinners/BeatLoader";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import API from "../../../../utils/API";
 import WriteComment from "../write-comment/WriteComment";
+import './single-comment.scss';
 
 const mapStateToProps = (state) => {
     return {
@@ -20,67 +24,119 @@ class SingleComment extends Component {
         this.state = {
             proposal,
             displayReply: false,
+            loading: false,
+            deleteConfirmation: false,
         };
     }
 
     handleUpVote = () => {
+        this.setState({ loading: true });
+
         API.upVoteComment(this.props.comment.id).then((res) => {
             if (res.success === false) {
                 alert(res.message);
                 return;
             }
 
-            this.props.getComments();
+            this.props.getComments().then(() => {
+                this.setState({ loading: false });
+            });
         });
     }
 
     handleDownVote = () => {
+        this.setState({ loading: true });
         API.downVoteComment(this.props.comment.id).then((res) => {
             if (res.success === false) {
                 alert(res.message);
                 return;
             }
 
-            this.props.getComments();
+            this.props.getComments().then(() => {
+                this.setState({ loading: false });
+            });
         });
     }
 
-    handleDestroy = () => {
+    confirmDestroy = () => {
+        this.setState({ loading: true });
+
         API.destroyComment(this.props.comment.id).then((res) => {
             if (res.success === false) {
                 alert(res.message);
                 return;
             }
 
-            this.props.getComments();
+            this.props.getComments().then(() => {
+                this.setState({ loading: false, deleteConfirmation: false });
+            });
         });
+    }
+
+    handleDestroy = () => {
+        if (this.state.deleteConfirmation === true) {
+            return this.confirmDestroy();
+        }
+
+        this.setState({ deleteConfirmation: true });
+
+        setTimeout(() => {
+            this.setState({ deleteConfirmation: false });
+        }, 3000);
     }
 
     handleReply = () => {
         this.setState({ displayReply: !this.state.displayReply });
     }
 
+    isCommentDeleted = () => {
+        const { comment } = this.props;
+
+        return comment.comment === 'Comment deleted by the user.';
+    }
+
     renderContent() {
         const { comment, proposal, getComments, authUser } = this.props;
-        const { displayReply } = this.state;
+        const { displayReply, loading, deleteConfirmation } = this.state;
 
         return (
-            <div className="comment">
-                <div className="comment-heading">
-                    <div className="comment-voting">
-                        {/* <img className="avatar-img" src="../Home/images/avatars/@commentItem.ProfileImage" alt="somebody1"> */}
+            <div className="comment-wrapper">
+                <div className={`comment-container ${loading ? 'comment-loading' : ''}`}>
+                    <div className="comment-loader">
+                        {loading && <BeatLoader color="#fff" />}
                     </div>
-                    <div className="comment-info">
-                        <a href="#" className="comment-author">{comment.user.first_name}</a>
-                        <p className="m-0">{comment.created_at}</p>
+                    <div className="comment-header">
+                        <div className="comment-header-start">
+                            <div className="comment-image">
+                                <img width="40" src="/user.png" alt="User avatar" />
+                            </div>
+                            <div className="comment-meta">
+                                <div className="comment-writer">{comment.profile.forum_name}</div>
+                                <div className="comment-date">{moment(comment.created_at).format('YYYY-MM-DD')}</div>
+                            </div>
+                        </div>
+                        <div className="comment-actions">
+                            <button onClick={this.handleUpVote} className={`comment-action ${comment.up_voted_by_auth ? 'active' : ''}`}>
+                                <ChevronUp />
+                                <span className="comment-action-value">{comment.up_vote}</span>
+                            </button>
+                            <button onClick={this.handleDownVote} className={`comment-action ${comment.down_voted_by_auth ? 'active' : ''}`}>
+                                <ChevronDown />
+                                <span className="comment-action-value">{comment.down_vote}</span>
+                            </button>
+                            <button onClick={this.handleReply} className={`comment-action display-on-hover ${displayReply ? 'active' : ''}`}>
+                                <MessageCircle />
+                                <span>Reply</span>
+                            </button>
+                            {authUser?.id === comment.user_id && !this.isCommentDeleted() && (
+                                <button onClick={this.handleDestroy} className={`comment-action display-on-hover ${deleteConfirmation ? 'action-confirm' : ''}`}>
+                                    <Trash />
+                                    <span>{deleteConfirmation ? 'Confirm' : 'Delete'}</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
-                </div>
-                <div className="comment-body">
-                    <p>{comment.comment}</p>
-                    <button onClick={this.handleUpVote}>Up ({comment.up_vote})</button>
-                    <button onClick={this.handleDownVote}>Down ({comment.down_vote})</button>
-                    <button onClick={this.handleReply}>Reply</button>
-                    {authUser?.id === comment.user_id && <button onClick={this.handleDestroy}>Delete</button>}
+                    <div className="comment-content">{comment.comment}</div>
                 </div>
                 {displayReply && (
                     <WriteComment
@@ -90,17 +146,19 @@ class SingleComment extends Component {
                         handleReply={this.handleReply}
                     />
                 )}
-                <div className="replies">
-                    {comment.children.map((child) => (
-                        <SingleComment
-                            key={child.id}
-                            comment={child}
-                            proposal={proposal}
-                            authUser={authUser}
-                            getComments={getComments}
-                        />
-                    ))}
-                </div>
+                {comment.children.length > 0 && (
+                    <div className="comment-replies">
+                        {comment.children.map((child) => (
+                            <SingleComment
+                                key={child.id}
+                                comment={child}
+                                proposal={proposal}
+                                authUser={authUser}
+                                getComments={getComments}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         );
     }

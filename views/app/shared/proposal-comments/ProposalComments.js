@@ -37,7 +37,7 @@ class ProposalComments extends Component {
   }
 
   getComments = () => {
-    API.getComments(this.props.proposal.id).then((res) => {
+    return API.getComments(this.props.proposal.id).then((res) => {
       this.setState({ comments: res.comments });
     });
   }
@@ -62,19 +62,21 @@ class ProposalComments extends Component {
                     >
                       <div>
                         <label>Comments</label>
-                        <Icon.Info size={16} />
+                        <Icon.Info size={16} className="ml-3" />
                       </div>
                     </div>
                   )}
                 </>
               </CardHeader>
               <CardBody>
-                <div className="mt-3">
+                <div className="write-comment">
                   <WriteComment proposal={proposal} getComments={this.getComments} />
                 </div>
-                {comments.map((comment) => (
-                  <SingleComment key={comment.id} comment={comment} proposal={proposal} getComments={this.getComments} />
-                ))}
+                <div className="comments">
+                  {comments.map((comment) => (
+                    <SingleComment key={comment.id} comment={comment} proposal={proposal} getComments={this.getComments} />
+                  ))}
+                </div>
               </CardBody>
             </Card>
           </div>

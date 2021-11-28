@@ -26,3 +26,9 @@
     padding: 0.5rem 1rem;
     border-radius: 1rem;
 }
+
+.comment-btn:disabled {
+    background-color: rgba(#fff, 0.5);
+    pointer-events: none;
+    user-select: none;
+}
