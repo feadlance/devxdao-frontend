@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import API from "../../../../utils/API";
 import WriteComment from "../write-comment/WriteComment";
-import './single-comment.scss';
 
 const mapStateToProps = (state) => {
     return {
@@ -19,10 +18,11 @@ class SingleComment extends Component {
     constructor(props) {
         super(props);
 
-        const { proposal } = this.props;
+        const { proposal, comment } = this.props;
 
         this.state = {
             proposal,
+            comment,
             displayReply: false,
             loading: false,
             deleteConfirmation: false,
@@ -38,27 +38,36 @@ class SingleComment extends Component {
                 return;
             }
 
-            this.props.getComments().then(() => {
-                this.setState({ loading: false });
-            });
+            this.setState((prev) => ({
+                loading: false,
+                comment: {
+                    ...prev.comment,
+                    ...res.data
+                }
+            }));
         });
     }
 
     handleDownVote = () => {
         this.setState({ loading: true });
+
         API.downVoteComment(this.props.comment.id).then((res) => {
             if (res.success === false) {
                 alert(res.message);
                 return;
             }
 
-            this.props.getComments().then(() => {
-                this.setState({ loading: false });
-            });
+            this.setState((prev) => ({
+                loading: false,
+                comment: {
+                    ...prev.comment,
+                    ...res.data
+                }
+            }));
         });
     }
 
-    confirmDestroy = () => {
+    handleConfirmDestroy = () => {
         this.setState({ loading: true });
 
         API.destroyComment(this.props.comment.id).then((res) => {
@@ -67,15 +76,20 @@ class SingleComment extends Component {
                 return;
             }
 
-            this.props.getComments().then(() => {
-                this.setState({ loading: false, deleteConfirmation: false });
-            });
+            this.setState((prev) => ({
+                loading: false,
+                deleteConfirmation: false,
+                comment: {
+                    ...prev.comment,
+                    comment: res.comment.comment,
+                }
+            }));
         });
     }
 
     handleDestroy = () => {
         if (this.state.deleteConfirmation === true) {
-            return this.confirmDestroy();
+            return this.handleConfirmDestroy();
         }
 
         this.setState({ deleteConfirmation: true });
@@ -90,14 +104,14 @@ class SingleComment extends Component {
     }
 
     isCommentDeleted = () => {
-        const { comment } = this.props;
+        const { comment } = this.state;
 
         return comment.comment === 'Comment deleted by the user.';
     }
 
     renderContent() {
-        const { comment, proposal, getComments, authUser } = this.props;
-        const { displayReply, loading, deleteConfirmation } = this.state;
+        const { proposal, getComments, authUser } = this.props;
+        const { comment, displayReply, loading, deleteConfirmation } = this.state;
 
         return (
             <div className="comment-wrapper">
