@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import API from "../../../../utils/API";
-import './write-comment.scss';
 
 const mapStateToProps = (state) => {
     return {
@@ -19,7 +18,8 @@ class WriteComment extends Component {
         super(props);
 
         this.state = {
-            comment: "",
+            commentText: '',
+            errorText: null,
             loading: false,
         };
 
@@ -38,12 +38,22 @@ class WriteComment extends Component {
         this.setState({ loading: true });
 
         API.submitComment(proposal.id, {
-            comment: this.state.comment,
+            comment: this.state.commentText,
             parent_id: parent
-        }).then(() => {
+        }).then((res) => {
+            if (res?.response?.status === 422) {
+                this.setState({
+                    loading: false,
+                    errorText: res.response.data.errors.comment[0],
+                });
+
+                return;
+            }
+
             getComments().then(() => {
                 this.setState({
-                    comment: "",
+                    commentText: '',
+                    errorText: '',
                     loading: false,
                 });
 
@@ -54,18 +64,27 @@ class WriteComment extends Component {
 
     handleChange = (e) => {
         this.setState({
-            comment: e.target.value,
+            commentText: e.target.value,
         });
     }
 
     render() {
-        const { loading, comment } = this.state;
+        const { loading, commentText, errorText } = this.state;
         return (
             <form onSubmit={this.handleSubmit}>
-                <textarea ref={this.inputRef} className="comment-input" value={comment} onChange={this.handleChange} placeholder="Reply"></textarea>
-                <button className="comment-btn" type="submit" disabled={loading}>
-                    {loading ? <BeatLoader size={8} color="#fff" /> : 'Reply'}
-                </button>
+                <textarea
+                    ref={this.inputRef}
+                    className="comment-input"
+                    value={commentText}
+                    onChange={this.handleChange}
+                    placeholder="Reply"
+                ></textarea>
+                <div className="comment-footer">
+                    <button className="comment-btn" type="submit" disabled={loading}>
+                        {loading ? <BeatLoader size={8} color="#fff" /> : 'Reply'}
+                    </button>
+                    {errorText && <span className="error-text">{errorText}</span>}
+                </div>
             </form>
         );
     }
