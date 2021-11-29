@@ -29,6 +29,12 @@ class SingleComment extends Component {
         };
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.comment !== this.props.comment) {
+            this.setState({ comment: this.props.comment });
+        }
+    }
+
     handleUpVote = () => {
         this.setState({ loading: true });
 
@@ -100,7 +106,9 @@ class SingleComment extends Component {
     }
 
     handleReply = () => {
-        this.setState({ displayReply: !this.state.displayReply });
+        this.setState({
+            displayReply: !this.state.displayReply,
+        });
     }
 
     isCommentDeleted = () => {
@@ -126,7 +134,7 @@ class SingleComment extends Component {
                             </div>
                             <div className="comment-meta">
                                 <div className="comment-writer">{comment.profile.forum_name}</div>
-                                <div className="comment-date">{moment(comment.created_at).format('YYYY-MM-DD')}</div>
+                                <div className="comment-date">{moment(comment.created_at).format('YYYY-MM-DD HH:mm')}</div>
                             </div>
                         </div>
                         <div className="comment-actions">
