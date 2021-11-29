@@ -250,7 +250,7 @@ class SingleProposal extends Component {
             getTimelineProposal(
               proposalId,
               {},
-              () => {},
+              () => { },
               (res) => {
                 if (res.success) {
                   this.setState({
@@ -318,8 +318,8 @@ class SingleProposal extends Component {
 
   // Render Comments
   renderComments() {
-    const {proposal} = this.state;
-    
+    const { proposal } = this.state;
+
     return (
       <ProposalComments proposal={proposal} />
     );
@@ -474,7 +474,9 @@ class SingleProposal extends Component {
         />
         <div className="d-flex gap-box">
           <div className="proposal-detail-box">
-            {this.renderComments()}
+            <div className="mb-3">
+              {this.renderComments()}
+            </div>
             {this.renderDetail()}
             {this.renderComplianceCheck()}
             {this.renderChangeContent()}
@@ -494,9 +496,8 @@ class SingleProposal extends Component {
                         >
                           <div>
                             <label className="pr-2">
-                              {`Milestone log for ${proposal.id} - Milestone ${
-                                ind + 1
-                              } - Submission ${item.time_submit}`}
+                              {`Milestone log for ${proposal.id} - Milestone ${ind + 1
+                                } - Submission ${item.time_submit}`}
                             </label>
                             <Icon.Info size={16} />
                           </div>
