@@ -4,11 +4,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import * as Icon from "react-feather";
 import "./proposal-comments.scss";
-import {
-  Card,
-  CardHeader,
-  CardBody
-} from "../../../../components/card";
+import { Card, CardHeader, CardBody } from "../../../../components/card";
 import API from "../../../../utils/API";
 import SingleComment from "../single-comment/SingleComment";
 import WriteComment from "../write-comment/WriteComment";
@@ -28,7 +24,7 @@ class ProposalComments extends Component {
     this.state = {
       expanded: false,
       comments: [],
-      proposal
+      proposal,
     };
   }
 
@@ -40,7 +36,7 @@ class ProposalComments extends Component {
     return API.getComments(this.props.proposal.id).then((res) => {
       this.setState({ comments: res.comments });
     });
-  }
+  };
 
   render() {
     const { expanded, comments, proposal } = this.state;
@@ -58,7 +54,10 @@ class ProposalComments extends Component {
                   {!expanded && (
                     <div
                       className="app-simple-section__titleInner w-100"
-                      style={{ display: "flex", justifyContent: "space-between" }}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
                     >
                       <div>
                         <label>Comments</label>
@@ -68,13 +67,32 @@ class ProposalComments extends Component {
                   )}
                 </>
               </CardHeader>
+              {comments.length > 0 && (
+                <div className="mt-3">
+                  <SingleComment
+                    key={comments[0].id}
+                    comment={comments[0]}
+                    proposal={proposal}
+                    getComments={this.getComments}
+                    withoutChildren={true}
+                  />
+                </div>
+              )}
               <CardBody>
                 <div className="write-comment">
-                  <WriteComment proposal={proposal} getComments={this.getComments} />
+                  <WriteComment
+                    proposal={proposal}
+                    getComments={this.getComments}
+                  />
                 </div>
                 <div className="comments">
                   {comments.map((comment) => (
-                    <SingleComment key={comment.id} comment={comment} proposal={proposal} getComments={this.getComments} />
+                    <SingleComment
+                      key={comment.id}
+                      comment={comment}
+                      proposal={proposal}
+                      getComments={this.getComments}
+                    />
                   ))}
                 </div>
               </CardBody>

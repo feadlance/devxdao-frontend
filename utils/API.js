@@ -73,7 +73,7 @@ const sendRequest = (
         resolve({
           success: false,
           message: "Please try again later",
-          ...e
+          ...e,
         });
       });
   });
@@ -120,6 +120,11 @@ class API {
   // Submit Comment
   static submitComment(id, params = {}) {
     return sendRequest(`/user/proposal/${id}/comments`, params, "POST", true);
+  }
+
+  // Update Comment
+  static updateComment(id, params = {}) {
+    return sendRequest(`/user/comments/${id}`, params, "PUT", true);
   }
 
   // Destroy Comment

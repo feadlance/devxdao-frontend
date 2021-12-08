@@ -115,6 +115,27 @@
         flex-direction: column;
     }
 
+    .comment-author {
+        display: flex;
+        align-items: center;
+        gap: 0.40rem;
+    }
+
+    .user-reputation {
+        min-width: 1.25rem;
+        height: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 10pt;
+        color: #722ed1;
+        font-weight: bold;
+        background-color: white;
+        border-radius: 1rem;
+        padding: 4px;
+    }
+
     .comment-writer {
         font-weight: 500;
         line-height: 1;
@@ -180,6 +201,18 @@
         font-weight: 500;
         line-height: 0.8;
         font-size: 11pt;
+    }
+
+    .comment-content > a {
+        font-weight: 500;
+        text-decoration: underline !important;
+    }
+
+    .comment-updated {
+        display: flex;
+        gap: 0.25rem;
+        font-size: 10pt;
+        color: #722ed1;
     }
 
     .comment-replies {
