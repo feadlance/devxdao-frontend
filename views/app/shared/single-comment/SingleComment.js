@@ -180,7 +180,7 @@ class SingleComment extends Component {
                   )}
                 </div>
                 <div className="comment-date">
-                  {moment(comment.created_at).format("YYYY-MM-DD HH:mm")}
+                  {moment(comment.created_at).format("MM/DD/YYYY HH:mm")}
                 </div>
               </div>
             </div>
@@ -275,7 +275,7 @@ class SingleComment extends Component {
               {comment.created_at !== comment.updated_at && (
                 <div className="comment-updated">
                   <span>edited on</span>
-                  {moment(comment.updated_at).format("YYYY-MM-DD HH:mm")}
+                  {moment(comment.updated_at).format("MM/DD/YYYY HH:mm")}
                 </div>
               )}
             </div>

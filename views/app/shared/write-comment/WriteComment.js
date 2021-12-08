@@ -77,7 +77,7 @@ class WriteComment extends Component {
                     className="comment-input"
                     value={commentText}
                     onChange={this.handleChange}
-                    placeholder="Reply"
+                    placeholder="What are your toughts?"
                 ></textarea>
                 <div className="comment-footer">
                     <button className="comment-btn" type="submit" disabled={loading}>

@@ -69,6 +69,7 @@ class ProposalComments extends Component {
               </CardHeader>
               {comments.length > 0 && (
                 <div className="mt-3">
+                  <label className="mb-3"><Icon.Star className="mb-1" size={16} /> Top Rated Comment</label>
                   <SingleComment
                     key={comments[0].id}
                     comment={comments[0]}
