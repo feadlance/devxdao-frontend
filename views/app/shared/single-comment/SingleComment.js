@@ -17,6 +17,7 @@ import UpdateComment from "../update-comment/UpdateComment";
 import ReactMarkdown from "react-markdown";
 import ReactLinkify from "react-linkify";
 import { Reply } from "@material-ui/icons";
+import remarkBreaks from "remark-breaks";
 
 const mapStateToProps = (state) => {
   return {
@@ -247,6 +248,7 @@ class SingleComment extends Component {
           ) : (
             <div className="comment-content">
               <ReactMarkdown
+                remarkPlugins={[remarkBreaks]}
                 children={comment.comment}
                 components={{
                   p: (props) => (

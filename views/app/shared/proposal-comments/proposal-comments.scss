@@ -1,4 +1,6 @@
-#app-proposal-comments-section {
+@import "~easymde/dist/easymde.min.css";
+
+#app-proposal-comments-section {    
     .write-comment {
         padding: 1rem 0;
         margin-bottom: 1rem;
@@ -11,8 +13,29 @@
         gap: 1rem;
     }
 
+    .editor-toolbar {
+        border: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        > button {
+            color: #fff;
+            transition: background-color 200ms ease-in-out;
+
+            &.active,
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+                border: 0;
+            }
+        }
+    }
+
+    .editor-preview {
+        background-color: #4c3865;
+    }
+
     // Write comment
-    .comment-input {
+    .CodeMirror {
         width: 100%;
         height: 100%;
         padding: 0;
@@ -23,7 +46,6 @@
         font-family: "Roboto", sans-serif;
         color: #fff;
         background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 1rem;
         box-shadow: none;
         padding: 1rem;
 
@@ -36,15 +58,17 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        margin-top: 0.5rem;
     }
 
     .comment-btn {
         border: 0;
         outline: 0;
-        background-color: #fff;
-        color: #000;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
         padding: 0.5rem 1rem;
-        border-radius: 1rem;
+        font-weight: 500;
+        border-radius: 4px;
     }
 
     .comment-btn:disabled {
@@ -69,7 +93,7 @@
     .comment-container {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1rem;
     }
 
     .comment-header {
@@ -203,14 +227,23 @@
         font-size: 11pt;
     }
 
-    .comment-content > a {
-        font-weight: 500;
-        text-decoration: underline !important;
+    .comment-content {
+        img {
+            max-width: 150px;
+            background-color: white;
+            border-radius: 1rem;
+        }
+
+        a {
+            font-weight: 500;
+            text-decoration: underline !important;
+        }
     }
 
     .comment-updated {
         display: flex;
         gap: 0.25rem;
+        margin-top: 0.25rem;
         font-size: 10pt;
         color: gray;
     }

@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import EasyMDE from "easymde";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -24,11 +25,35 @@ class UpdateComment extends Component {
       loading: false,
     };
 
-    this.inputRef = React.createRef();
+    this.editor = React.createRef(null);
+    this.inputRef = React.createRef(null);
   }
 
   componentDidMount() {
-    this.inputRef.current.focus();
+    this.editor = new EasyMDE({
+      element: this.inputRef.current,
+      toolbar: [
+        "bold",
+        "italic",
+        "strikethrough",
+        "heading-3",
+        "|",
+        "unordered-list",
+        "ordered-list",
+        "|",
+        "image",
+        "preview",
+      ],
+      spellChecker: false,
+      maxHeight: "100px",
+      status: false,
+    });
+
+    this.editor.codemirror.on("change", () => {
+      this.setState({ commentText: this.editor.value() });
+    });
+
+    this.editor.codemirror.focus();
   }
 
   handleSubmit = (e) => {
@@ -52,17 +77,13 @@ class UpdateComment extends Component {
       }
 
       this.setState({ loading: false });
+      this.editor.value("");
+
       handleEdit &&
         handleEdit({
           comment: commentText,
           updated_at: res.comment.updated_at,
         });
-    });
-  };
-
-  handleChange = (e) => {
-    this.setState({
-      commentText: e.target.value,
     });
   };
 
@@ -73,10 +94,8 @@ class UpdateComment extends Component {
       <form onSubmit={this.handleSubmit}>
         <textarea
           ref={this.inputRef}
-          className="comment-input"
-          value={commentText}
-          onChange={this.handleChange}
-          placeholder="Reply"
+          defaultValue={commentText}
+          placeholder="What are your toughts?"
         ></textarea>
         <div className="comment-footer">
           <button className="comment-btn" type="submit" disabled={loading}>

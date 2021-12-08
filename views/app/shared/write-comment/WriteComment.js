@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import EasyMDE from "easymde";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -6,88 +7,107 @@ import { BeatLoader } from "react-spinners";
 import API from "../../../../utils/API";
 
 const mapStateToProps = (state) => {
-    return {
-        authUser: state.global.authUser,
-        settings: state.global.settings,
-        editMode: state.admin.editMode,
-    };
+  return {
+    authUser: state.global.authUser,
+    settings: state.global.settings,
+    editMode: state.admin.editMode,
+  };
 };
 
 class WriteComment extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            commentText: '',
-            errorText: null,
-            loading: false,
-        };
+    this.state = {
+      commentText: "",
+      errorText: null,
+      loading: false,
+    };
 
-        this.inputRef = React.createRef();
-    }
+    this.editor = React.createRef(null);
+    this.inputRef = React.createRef(null);
+  }
 
-    componentDidMount() {
-        this.inputRef.current.focus();
-    }
+  componentDidMount() {
+    this.editor = new EasyMDE({
+      element: this.inputRef.current,
+      toolbar: [
+        "bold",
+        "italic",
+        "strikethrough",
+        "heading-3",
+        "|",
+        "unordered-list",
+        "ordered-list",
+        "|",
+        "image",
+        "preview",
+      ],
+      spellChecker: false,
+      maxHeight: "100px",
+      status: false,
+    });
 
-    handleSubmit = (e) => {
-        e.preventDefault();
+    this.editor.codemirror.on("change", () => {
+      this.setState({ commentText: this.editor.value() });
+    });
 
-        const { parent, proposal, getComments, handleReply } = this.props;
+    this.editor.codemirror.focus();
+  }
 
-        this.setState({ loading: true });
+  handleSubmit = (e) => {
+    e.preventDefault();
 
-        API.submitComment(proposal.id, {
-            comment: this.state.commentText,
-            parent_id: parent
-        }).then((res) => {
-            if (res?.response?.status === 422) {
-                this.setState({
-                    loading: false,
-                    errorText: res.response.data.errors.comment[0],
-                });
+    const { parent, proposal, getComments, handleReply } = this.props;
 
-                return;
-            }
+    this.setState({ loading: true });
 
-            getComments().then(() => {
-                this.setState({
-                    commentText: '',
-                    errorText: '',
-                    loading: false,
-                });
-
-                handleReply && handleReply();
-            });
-        });
-    }
-
-    handleChange = (e) => {
+    API.submitComment(proposal.id, {
+      comment: this.state.commentText,
+      parent_id: parent,
+    }).then((res) => {
+      if (res?.response?.status === 422) {
         this.setState({
-            commentText: e.target.value,
+          loading: false,
+          errorText: res.response.data.errors.comment[0],
         });
-    }
 
-    render() {
-        const { loading, commentText, errorText } = this.state;
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <textarea
-                    ref={this.inputRef}
-                    className="comment-input"
-                    value={commentText}
-                    onChange={this.handleChange}
-                    placeholder="What are your toughts?"
-                ></textarea>
-                <div className="comment-footer">
-                    <button className="comment-btn" type="submit" disabled={loading}>
-                        {loading ? <BeatLoader size={8} color="#fff" /> : 'Reply'}
-                    </button>
-                    {errorText && <span className="error-text">{errorText}</span>}
-                </div>
-            </form>
-        );
-    }
+        return;
+      }
+
+      getComments().then(() => {
+        this.setState({
+          commentText: "",
+          errorText: "",
+          loading: false,
+        });
+
+        this.editor.value("");
+
+        handleReply && handleReply();
+      });
+    });
+  };
+
+  render() {
+    const { loading, commentText, errorText } = this.state;
+    
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <textarea
+          ref={this.inputRef}
+          defaultValue={commentText}
+          placeholder="What are your toughts?"
+        ></textarea>
+        <div className="comment-footer">
+          <button className="comment-btn" type="submit" disabled={loading}>
+            {loading ? <BeatLoader size={8} color="#fff" /> : "Reply"}
+          </button>
+          {errorText && <span className="error-text">{errorText}</span>}
+        </div>
+      </form>
+    );
+  }
 }
 
 export default connect(mapStateToProps)(withRouter(WriteComment));
