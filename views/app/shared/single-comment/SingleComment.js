@@ -173,9 +173,9 @@ class SingleComment extends Component {
                   <div className="comment-writer">
                     {comment.profile.forum_name}
                   </div>
-                  {comment.reputation && (
+                  {comment.user?.reputations_count > 0 && (
                     <div className="user-reputation">
-                      {comment.reputation.value}
+                      {comment.user.reputations_count}
                     </div>
                   )}
                 </div>
