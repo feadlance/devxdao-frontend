@@ -30,7 +30,7 @@ import IconEmptyDot from "../../../../public/icons/empty-dot.svg";
 import IconCheckDot from "../../../../public/icons/check-dot.svg";
 import "./single-proposal.scss";
 import Helper from "../../../../utils/Helper";
-import ProposalComments from "../../shared/proposal-comments/ProposalComments";
+import ProposalPosts from "../../shared/proposal-posts/ProposalPosts";
 
 const mapStateToProps = (state) => {
   return {
@@ -250,7 +250,7 @@ class SingleProposal extends Component {
             getTimelineProposal(
               proposalId,
               {},
-              () => { },
+              () => {},
               (res) => {
                 if (res.success) {
                   this.setState({
@@ -316,13 +316,11 @@ class SingleProposal extends Component {
     return <PageHeaderComponent title={title} />;
   }
 
-  // Render Comments
-  renderComments() {
+  // Render Posts
+  renderPosts() {
     const { proposal } = this.state;
 
-    return (
-      <ProposalComments proposal={proposal} />
-    );
+    return <ProposalPosts proposal={proposal} />;
   }
 
   // Render Detail
@@ -474,9 +472,7 @@ class SingleProposal extends Component {
         />
         <div className="d-flex gap-box">
           <div className="proposal-detail-box">
-            <div className="mb-3">
-              {this.renderComments()}
-            </div>
+            <div className="mb-3">{this.renderPosts()}</div>
             {this.renderDetail()}
             {this.renderComplianceCheck()}
             {this.renderChangeContent()}
@@ -496,8 +492,9 @@ class SingleProposal extends Component {
                         >
                           <div>
                             <label className="pr-2">
-                              {`Milestone log for ${proposal.id} - Milestone ${ind + 1
-                                } - Submission ${item.time_submit}`}
+                              {`Milestone log for ${proposal.id} - Milestone ${
+                                ind + 1
+                              } - Submission ${item.time_submit}`}
                             </label>
                             <Icon.Info size={16} />
                           </div>

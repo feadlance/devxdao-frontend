@@ -112,34 +112,39 @@ class API {
     return sendRequest("/resend-code", {}, "POST", true);
   }
 
-  // Get Comments
-  static getComments(id) {
-    return sendRequest(`/user/proposal/${id}/comments`, {}, "GET", true);
+  // Get Topic Posts
+  static getPosts(id) {
+    return sendRequest(`/user/discourse/topics/${id}/posts`, {}, "GET", true);
   }
 
-  // Submit Comment
-  static submitComment(id, params = {}) {
-    return sendRequest(`/user/proposal/${id}/comments`, params, "POST", true);
+  // Show Topic Post
+  static showPost(id) {
+    return sendRequest(`/user/discourse/posts/${id}`, {}, "GET", true);
   }
 
-  // Update Comment
-  static updateComment(id, params = {}) {
-    return sendRequest(`/user/comments/${id}`, params, "PUT", true);
+  // Submit Post
+  static submitPost(id, params = {}) {
+    return sendRequest(
+      `/user/discourse/topics/${id}/posts`,
+      params,
+      "POST",
+      true
+    );
   }
 
-  // Destroy Comment
-  static destroyComment(id) {
-    return sendRequest(`/user/comments/${id}`, {}, "DELETE", true);
+  // Update Post
+  static updatePost(id, params = {}) {
+    return sendRequest(`/user/discourse/posts/${id}`, params, "PUT", true);
   }
 
-  // Up Vote Comment
-  static upVoteComment(id) {
-    return sendRequest(`/user/comments/${id}/up`, {}, "POST", true);
+  // Destroy Post
+  static destroyPost(id) {
+    return sendRequest(`/user/discourse/posts/${id}`, {}, "DELETE", true);
   }
 
-  // Down Vote Comment
-  static downVoteComment(id) {
-    return sendRequest(`/user/comments/${id}/down`, {}, "POST", true);
+  // Like or Unlike Post
+  static reactPost(id) {
+    return sendRequest(`/user/discourse/posts/${id}/react`, {}, "PUT", true);
   }
 
   // Create Sponsor Code

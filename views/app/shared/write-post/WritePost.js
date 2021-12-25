@@ -14,13 +14,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-class UpdateComment extends Component {
+class WritePost extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      commentId: props.commentId,
-      commentText: props.commentText,
+      postText: "",
       errorText: null,
       loading: false,
     };
@@ -50,7 +49,7 @@ class UpdateComment extends Component {
     });
 
     this.editor.codemirror.on("change", () => {
-      this.setState({ commentText: this.editor.value() });
+      this.setState({ postText: this.editor.value() });
     });
 
     this.editor.codemirror.focus();
@@ -59,47 +58,52 @@ class UpdateComment extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const { handleEdit } = this.props;
-    const { commentId, commentText } = this.state;
+    const { parent, proposal, getPosts, handleReply } = this.props;
 
     this.setState({ loading: true });
 
-    API.updateComment(commentId, {
-      comment: commentText,
-    }).then((res) => {
-      if (res?.response?.status === 422) {
-        this.setState({
-          loading: false,
-          errorText: res.response.data.errors.comment[0],
+    API.submitPost(proposal.discourse_topic_id, {
+      post: this.state.postText,
+      reply_to_post_number: parent,
+    })
+      .then((res) => {
+        if (res?.response?.status === 422) {
+          this.setState({
+            errorText: res.response.data.errors.post[0],
+          });
+
+          return;
+        }
+
+        getPosts().then(() => {
+          this.setState({
+            postText: "",
+            errorText: "",
+          });
+
+          this.editor.value("");
+
+          handleReply && handleReply();
         });
-
-        return;
-      }
-
-      this.setState({ loading: false });
-      this.editor.value("");
-
-      handleEdit &&
-        handleEdit({
-          comment: commentText,
-          updated_at: res.comment.updated_at,
-        });
-    });
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+      });
   };
 
   render() {
-    const { loading, commentText, errorText } = this.state;
+    const { loading, postText, errorText } = this.state;
 
     return (
       <form onSubmit={this.handleSubmit}>
         <textarea
           ref={this.inputRef}
-          defaultValue={commentText}
+          defaultValue={postText}
           placeholder="What are your toughts?"
         ></textarea>
-        <div className="comment-footer">
-          <button className="comment-btn" type="submit" disabled={loading}>
-            {loading ? <BeatLoader size={8} color="#fff" /> : "Update"}
+        <div className="post-footer">
+          <button className="post-btn" type="submit" disabled={loading}>
+            {loading ? <BeatLoader size={8} color="#fff" /> : "Reply"}
           </button>
           {errorText && <span className="error-text">{errorText}</span>}
         </div>
@@ -108,4 +112,4 @@ class UpdateComment extends Component {
   }
 }
 
-export default connect(mapStateToProps)(withRouter(UpdateComment));
+export default connect(mapStateToProps)(withRouter(WritePost));

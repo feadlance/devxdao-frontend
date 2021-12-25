@@ -3,11 +3,11 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import * as Icon from "react-feather";
-import "./proposal-comments.scss";
+import "./proposal-posts.scss";
 import { Card, CardHeader, CardBody } from "../../../../components/card";
 import API from "../../../../utils/API";
-import SingleComment from "../single-comment/SingleComment";
-import WriteComment from "../write-comment/WriteComment";
+import SinglePost from "../single-post/SinglePost";
+import WritePost from "../write-post/WritePost";
 
 const mapStateToProps = (state) => {
   return {
@@ -17,35 +17,37 @@ const mapStateToProps = (state) => {
   };
 };
 
-class ProposalComments extends Component {
+class ProposalPosts extends Component {
   constructor(props) {
     super(props);
     const { proposal } = this.props;
     this.state = {
       expanded: false,
-      comments: [],
+      posts: [],
       proposal,
     };
   }
 
   componentDidMount() {
-    this.getComments();
+    this.getPosts();
   }
 
-  getComments = () => {
-    return API.getComments(this.props.proposal.id).then((res) => {
-      this.setState({ comments: res.comments });
+  getPosts = () => {
+    return API.getPosts(this.props.proposal.discourse_topic_id).then((res) => {
+      if (res.posts) {
+        this.setState({ posts: res.posts });
+      }
     });
   };
 
   render() {
-    const { expanded, comments, proposal } = this.state;
+    const { expanded, posts, proposal } = this.state;
     const { isAutoExpand } = this.props;
 
     if (!proposal || !proposal.id) return null;
 
     return (
-      <section id="app-proposal-comments-section">
+      <section id="app-proposal-posts-section">
         <Fragment>
           <div>
             <Card isAutoExpand={isAutoExpand} extraAction={this.toggle}>
@@ -60,39 +62,34 @@ class ProposalComments extends Component {
                       }}
                     >
                       <div>
-                        <label>Comments</label>
+                        <label>Posts</label>
                         <Icon.Info size={16} className="ml-3" />
                       </div>
                     </div>
                   )}
                 </>
               </CardHeader>
-              {comments.length > 0 && (
+              {posts.length > 0 && (
                 <div className="mt-3">
-                  <label className="mb-3"><Icon.Star className="mb-1" size={16} /> Top Rated Comment</label>
-                  <SingleComment
-                    key={comments[0].id}
-                    comment={comments[0]}
+                  <SinglePost
+                    key={posts[0].id}
+                    post={posts[0]}
                     proposal={proposal}
-                    getComments={this.getComments}
-                    withoutChildren={true}
+                    getPosts={this.getPosts}
                   />
                 </div>
               )}
               <CardBody>
-                <div className="write-comment">
-                  <WriteComment
-                    proposal={proposal}
-                    getComments={this.getComments}
-                  />
+                <div className="write-post">
+                  <WritePost proposal={proposal} getPosts={this.getPosts} />
                 </div>
-                <div className="comments">
-                  {comments.map((comment) => (
-                    <SingleComment
-                      key={comment.id}
-                      comment={comment}
+                <div className="posts">
+                  {posts.map((post) => (
+                    <SinglePost
+                      key={post.id}
+                      post={post}
                       proposal={proposal}
-                      getComments={this.getComments}
+                      getPosts={this.getPosts}
                     />
                   ))}
                 </div>
@@ -105,4 +102,4 @@ class ProposalComments extends Component {
   }
 }
 
-export default connect(mapStateToProps)(withRouter(ProposalComments));
+export default connect(mapStateToProps)(withRouter(ProposalPosts));
