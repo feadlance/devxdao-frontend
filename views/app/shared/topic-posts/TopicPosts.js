@@ -3,7 +3,7 @@ import API from "../../../../utils/API";
 import { offsetPostIds, isLastPage } from "../../../../utils/Discourse";
 import SinglePost from "../single-post/SinglePost";
 import WritePost from "../write-post/WritePost";
-import "./topic-posts.scss";
+import "../../topics/discourse.scss";
 
 class TopicPosts extends Component {
   constructor(props) {
@@ -64,7 +64,7 @@ class TopicPosts extends Component {
     }
 
     return (
-      <div id="discourse-posts">
+      <div className="discourse">
         <div className="write-post">
           <WritePost topicId={topic.id} promise={this.handlePost} />
         </div>

@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { Fade } from "react-reveal";
 import TopicsView from "../shared/topics/Topics";
-import "./topics.scss";
 
 const mapStateToProps = (state) => {
   return {
@@ -20,7 +19,12 @@ class Topics extends Component {
       <div id="app-topics-page">
         <Fade distance={"20px"} bottom duration={400} delay={600}>
           <div className="mb-3">
-            <button className="btn btn-primary small">New Topic</button>
+            <button
+              onClick={() => this.props.history.push("/app/topics/create")}
+              className="btn btn-primary small"
+            >
+              New Topic
+            </button>
           </div>
         </Fade>
         <TopicsView />

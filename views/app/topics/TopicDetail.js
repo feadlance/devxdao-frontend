@@ -7,8 +7,6 @@ import {
   PageHeaderComponent,
   GlobalRelativeCanvasComponent,
 } from "../../../components";
-import "./topic-detail.scss";
-import "../shared/proposal-posts/proposal-posts.scss";
 import TopicPosts from "../shared/topic-posts/TopicPosts";
 import API from "../../../utils/API";
 
@@ -40,14 +38,14 @@ class TopicDetail extends Component {
 
     const title = topic.title;
 
-    // Owner
+    // Can edit topic
     if (topic.details.can_edit) {
       return (
         <PageHeaderComponent
           title={title}
           buttonData={{
             link: `/app/topics/${topic.id}/edit`,
-            text: "Edit Topic",
+            text: "Edit Topic Title",
           }}
         />
       );
@@ -66,15 +64,13 @@ class TopicDetail extends Component {
 
     return (
       <section id="app-topic-detail-page">
-        <div id="discourse-posts">
-          {this.renderHeader()}
-          <Card isAutoExpand={true}>
-            <CardHeader>Posts</CardHeader>
-            <CardBody>
-              <TopicPosts topic={topic} />
-            </CardBody>
-          </Card>
-        </div>
+        {this.renderHeader()}
+        <Card isAutoExpand={true}>
+          <CardHeader>Posts</CardHeader>
+          <CardBody>
+            <TopicPosts topic={topic} />
+          </CardBody>
+        </Card>
       </section>
     );
   }

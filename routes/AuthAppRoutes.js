@@ -9,9 +9,9 @@ const DiscussionsView = lazy(() =>
   import("../views/app/discussions/Discussions")
 );
 const TopicsView = lazy(() => import("../views/app/topics/Topics"));
-const TopicDetailView = lazy(() =>
-  import("../views/app/topic-detail/TopicDetail")
-);
+const TopicDetailView = lazy(() => import("../views/app/topics/TopicDetail"));
+const CreateTopicView = lazy(() => import("../views/app/topics/CreateTopic"));
+const EditTopicView = lazy(() => import("../views/app/topics/EditTopic"));
 const SurveysView = lazy(() => import("../views/app/surveys/Surveys"));
 const StartSurveyView = lazy(() =>
   import("../views/app/start-survey/StartSurvey")
@@ -213,6 +213,12 @@ export default function AuthAppRoutes() {
           />
           <Route path="/app/discussions" component={DiscussionsView} exact />
           <Route path="/app/topics" component={TopicsView} exact />
+          <Route path="/app/topics/create" component={CreateTopicView} exact />
+          <Route
+            path="/app/topics/:topic/edit"
+            component={EditTopicView}
+            exact
+          />
           <Route path="/app/topics/:topic" component={TopicDetailView} exact />
           <Route path="/app/surveys" component={SurveysView} exact />
           <Route path="/app/surveys/start" component={StartSurveyView} exact />

@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
-import EasyMDE from "easymde";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import API from "../../../../utils/API";
+import MarkdownEditor from "../../../../utils/MarkdownEditor";
 
 const mapStateToProps = (state) => {
   return {
@@ -29,24 +29,7 @@ class WritePost extends Component {
   }
 
   componentDidMount() {
-    this.editor = new EasyMDE({
-      element: this.inputRef.current,
-      toolbar: [
-        "bold",
-        "italic",
-        "strikethrough",
-        "heading-3",
-        "|",
-        "unordered-list",
-        "ordered-list",
-        "|",
-        "image",
-        "preview",
-      ],
-      spellChecker: false,
-      maxHeight: "100px",
-      status: false,
-    });
+    this.editor = new MarkdownEditor(this.inputRef.current);
 
     this.editor.codemirror.on("change", () => {
       this.setState({ postText: this.editor.value() });
@@ -93,11 +76,13 @@ class WritePost extends Component {
 
     return (
       <form onSubmit={this.handleSubmit}>
-        <textarea
-          ref={this.inputRef}
-          defaultValue={postText}
-          placeholder="What are your toughts?"
-        ></textarea>
+        <div className="fd-codemirror">
+          <textarea
+            ref={this.inputRef}
+            defaultValue={postText}
+            placeholder="What are your toughts?"
+          ></textarea>
+        </div>
         <div className="post-footer">
           <button className="post-btn" type="submit" disabled={loading}>
             {loading ? <BeatLoader size={8} color="#fff" /> : "Reply"}

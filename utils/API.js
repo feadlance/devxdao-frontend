@@ -112,6 +112,14 @@ class API {
     return sendRequest("/resend-code", {}, "POST", true);
   }
 
+  static createTopic(params) {
+    return sendRequest("/user/discourse/topics", params, "POST", true);
+  }
+
+  static updateTopic(id, params) {
+    return sendRequest(`/user/discourse/topics/${id}`, params, "PUT", true);
+  }
+
   static getTopic(id) {
     return sendRequest(`/user/discourse/topics/${id}`, {}, "GET", true);
   }
