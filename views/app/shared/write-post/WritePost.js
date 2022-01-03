@@ -58,24 +58,21 @@ class WritePost extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const { parent, proposal, getPosts, handleReply } = this.props;
+    const { parent, topicId, promise, callback } = this.props;
 
     this.setState({ loading: true });
 
-    API.submitPost(proposal.discourse_topic_id, {
+    API.submitPost(topicId, {
       post: this.state.postText,
       reply_to_post_number: parent,
-    })
-      .then((res) => {
-        if (res?.response?.status === 422) {
-          this.setState({
-            errorText: res.response.data.errors.post[0],
-          });
+    }).then((res) => {
+      if (res?.failed) {
+        this.setState({ errorText: res.message, loading: false });
+        return;
+      }
 
-          return;
-        }
-
-        getPosts().then(() => {
+      promise(res)
+        .then((res) => {
           this.setState({
             postText: "",
             errorText: "",
@@ -83,12 +80,12 @@ class WritePost extends Component {
 
           this.editor.value("");
 
-          handleReply && handleReply();
+          callback && callback(res.data);
+        })
+        .finally(() => {
+          this.setState({ loading: false });
         });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
-      });
+    });
   };
 
   render() {

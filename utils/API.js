@@ -112,14 +112,37 @@ class API {
     return sendRequest("/resend-code", {}, "POST", true);
   }
 
+  static getTopic(id) {
+    return sendRequest(`/user/discourse/topics/${id}`, {}, "GET", true);
+  }
+
+  static getTopics(page = 0) {
+    return sendRequest("/user/discourse/topics", { page }, "GET", true);
+  }
+
   // Get Topic Posts
-  static getPosts(id) {
-    return sendRequest(`/user/discourse/topics/${id}/posts`, {}, "GET", true);
+  static getPosts(id, postIds = []) {
+    return sendRequest(
+      `/user/discourse/topics/${id}/posts`,
+      { post_ids: postIds },
+      "GET",
+      true
+    );
+  }
+
+  // Get Topic Post
+  static getPost(id) {
+    return sendRequest(`/posts/${id}`, {}, "GET", true);
   }
 
   // Show Topic Post
   static showPost(id) {
     return sendRequest(`/user/discourse/posts/${id}`, {}, "GET", true);
+  }
+
+  // Get Post Replies
+  static getPostReplies(id) {
+    return sendRequest(`/user/discourse/posts/${id}/replies`, {}, "GET", true);
   }
 
   // Submit Post

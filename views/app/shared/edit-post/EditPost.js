@@ -79,8 +79,6 @@ class EditPost extends Component {
       this.setState({ loading: false });
       this.editor.value("");
 
-      console.log(res);
-
       handleEdit &&
         handleEdit({
           cooked: res.post.cooked,
@@ -93,7 +91,7 @@ class EditPost extends Component {
     const { loading, postText, errorText } = this.state;
 
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form className="mt-3" onSubmit={this.handleSubmit}>
         <textarea
           ref={this.inputRef}
           defaultValue={postText}

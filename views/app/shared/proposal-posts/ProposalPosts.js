@@ -7,7 +7,7 @@ import "./proposal-posts.scss";
 import { Card, CardHeader, CardBody } from "../../../../components/card";
 import API from "../../../../utils/API";
 import SinglePost from "../single-post/SinglePost";
-import WritePost from "../write-post/WritePost";
+import TopicPosts from "../topic-posts/TopicPosts";
 
 const mapStateToProps = (state) => {
   return {
@@ -20,37 +20,34 @@ const mapStateToProps = (state) => {
 class ProposalPosts extends Component {
   constructor(props) {
     super(props);
+
     const { proposal } = this.props;
+
     this.state = {
       expanded: false,
-      posts: [],
+      topic: {},
       proposal,
+      loading: true,
     };
   }
 
   componentDidMount() {
-    this.getPosts();
+    API.getTopic(this.props.proposal.discourse_topic_id).then((res) => {
+      res.data.post_stream.posts.shift();
+      this.setState({ topic: res.data, loading: false });
+    });
   }
 
-  getPosts = () => {
-    return API.getPosts(this.props.proposal.discourse_topic_id).then((res) => {
-      if (res.posts) {
-        this.setState({ posts: res.posts });
-      }
-    });
-  };
-
   render() {
-    const { expanded, posts, proposal } = this.state;
-    const { isAutoExpand } = this.props;
+    const { expanded, topic, proposal, loading } = this.state;
 
     if (!proposal || !proposal.id) return null;
 
     return (
       <section id="app-proposal-posts-section">
-        <Fragment>
+        <div id="discourse-posts">
           <div>
-            <Card isAutoExpand={isAutoExpand} extraAction={this.toggle}>
+            <Card extraAction={this.toggle}>
               <CardHeader>
                 <>
                   {!expanded && (
@@ -69,34 +66,22 @@ class ProposalPosts extends Component {
                   )}
                 </>
               </CardHeader>
-              {posts.length > 0 && (
+              {!loading && topic.post_stream.posts.length > 0 && (
                 <div className="mt-3">
                   <SinglePost
-                    key={posts[0].id}
-                    post={posts[0]}
-                    proposal={proposal}
-                    getPosts={this.getPosts}
+                    post={topic.post_stream.posts[0]}
+                    topicId={proposal.discourse_topic_id}
                   />
                 </div>
               )}
-              <CardBody>
-                <div className="write-post">
-                  <WritePost proposal={proposal} getPosts={this.getPosts} />
-                </div>
-                <div className="posts">
-                  {posts.map((post) => (
-                    <SinglePost
-                      key={post.id}
-                      post={post}
-                      proposal={proposal}
-                      getPosts={this.getPosts}
-                    />
-                  ))}
-                </div>
-              </CardBody>
+              {!loading && (
+                <CardBody>
+                  <TopicPosts topic={topic} />
+                </CardBody>
+              )}
             </Card>
           </div>
-        </Fragment>
+        </div>
       </section>
     );
   }

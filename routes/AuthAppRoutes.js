@@ -8,6 +8,10 @@ const MainView = lazy(() => import("../views/app/main/Main"));
 const DiscussionsView = lazy(() =>
   import("../views/app/discussions/Discussions")
 );
+const TopicsView = lazy(() => import("../views/app/topics/Topics"));
+const TopicDetailView = lazy(() =>
+  import("../views/app/topic-detail/TopicDetail")
+);
 const SurveysView = lazy(() => import("../views/app/surveys/Surveys"));
 const StartSurveyView = lazy(() =>
   import("../views/app/start-survey/StartSurvey")
@@ -208,6 +212,8 @@ export default function AuthAppRoutes() {
             exact
           />
           <Route path="/app/discussions" component={DiscussionsView} exact />
+          <Route path="/app/topics" component={TopicsView} exact />
+          <Route path="/app/topics/:topic" component={TopicDetailView} exact />
           <Route path="/app/surveys" component={SurveysView} exact />
           <Route path="/app/surveys/start" component={StartSurveyView} exact />
           <Route

@@ -1,34 +1,29 @@
 /* eslint-disable no-undef */
 import moment from "moment";
 import React, { Component } from "react";
-import { Edit, Heart, Trash } from "react-feather";
+import { ChevronDown, ChevronUp, Edit, Heart, Trash } from "react-feather";
 import BeatLoader from "react-spinners/BeatLoader";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import API from "../../../../utils/API";
 import WritePost from "../write-post/WritePost";
 import EditPost from "../edit-post/EditPost";
-import ReactMarkdown from "react-markdown";
-import ReactLinkify from "react-linkify";
 import { Reply } from "@material-ui/icons";
-import remarkBreaks from "remark-breaks";
 
-const mapStateToProps = (state) => {
-  return {
-    authUser: state.global.authUser,
-  };
+const mapStateToProps = () => {
+  return {};
 };
 
 class SinglePost extends Component {
   constructor(props) {
     super(props);
 
-    const { proposal, post } = this.props;
+    const { post } = this.props;
 
     this.state = {
-      proposal,
       post,
       displayReply: false,
+      displayReplies: false,
       displayEdit: false,
       loading: false,
       deleteConfirmation: false,
@@ -67,7 +62,6 @@ class SinglePost extends Component {
     this.setState({ loading: true });
 
     API.destroyPost(this.props.post.id).then((res) => {
-      console.log(res);
       if (res.success === false) {
         alert(res.message);
         return;
@@ -96,10 +90,20 @@ class SinglePost extends Component {
     }, 3000);
   };
 
-  handleReply = () => {
-    this.setState({
-      displayReply: !this.state.displayReply,
-    });
+  handleDisplayReply = () => {
+    this.setState((prev) => ({ displayReply: !prev.displayReply }));
+  };
+
+  handleReply = (data) => {
+    this.handleDisplayReply();
+
+    this.setState((prev) => ({
+      post: {
+        ...prev.post,
+        replies: data,
+        reply_count: data.length,
+      },
+    }));
   };
 
   handleEdit = () => {
@@ -138,12 +142,71 @@ class SinglePost extends Component {
     });
   };
 
-  renderContent() {
-    const { proposal, getPosts } = this.props;
+  handleReplies = (postId) => {
+    if (!this.state.displayReplies) {
+      this.setState({ loading: true });
 
+      API.getPostReplies(postId)
+        .then((res) => {
+          this.setState((prev) => ({
+            post: {
+              ...prev.post,
+              replies: res.data,
+            },
+            displayReplies: true,
+          }));
+        })
+        .finally(() => {
+          this.setState({ loading: false });
+        });
+    } else {
+      this.setState((prev) => ({
+        post: {
+          ...prev.post,
+          replies: [],
+        },
+        displayReplies: false,
+      }));
+    }
+  };
+
+  goToParentPost = (post) => {
+    const parentPost = document.getElementById(`post-${post}`);
+
+    if (!parentPost) {
+      return;
+    }
+
+    const container = parentPost.querySelector(".post-container");
+
+    parentPost.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    const intersectionObserver = new IntersectionObserver((entries) => {
+      let [entry] = entries;
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          container.classList.add("post-highlight");
+
+          setTimeout(() => {
+            container.classList.remove("post-highlight");
+          }, 500);
+
+          intersectionObserver.unobserve(entry.target);
+        }, 100);
+      }
+    });
+    // start observing
+    intersectionObserver.observe(container);
+  };
+
+  renderContent() {
     const {
       post,
       displayReply,
+      displayReplies,
       displayEdit,
       loading,
       deleteConfirmation,
@@ -152,7 +215,7 @@ class SinglePost extends Component {
     const likes = post.actions_summary?.find((action) => action.id === 2) || {};
 
     return (
-      <div className="post-wrapper">
+      <div id={`post-${post.post_number}`} className="post-wrapper">
         <div className={`post-container ${loading ? "post-loading" : ""}`}>
           <div className="post-loader">
             {loading && <BeatLoader color="#fff" />}
@@ -188,7 +251,7 @@ class SinglePost extends Component {
                 )}
               </button>
               <button
-                onClick={this.handleReply}
+                onClick={this.handleDisplayReply}
                 className={`post-action display-on-hover ${
                   displayReply ? "active" : ""
                 }`}
@@ -218,6 +281,15 @@ class SinglePost extends Component {
                   <span>{deleteConfirmation ? "Confirm" : "Delete"}</span>
                 </button>
               )}
+              {post.reply_to_post_number && (
+                <button
+                  onClick={() => this.goToParentPost(post.reply_to_post_number)}
+                  className="post-action ml-auto"
+                >
+                  <Reply />
+                  <span>{post.reply_to_user.username}</span>
+                </button>
+              )}
             </div>
           </div>
           {displayEdit ? (
@@ -240,37 +312,40 @@ class SinglePost extends Component {
               )}
             </div>
           )}
+          {post.reply_count > 0 && (
+            <div className="mt-2">
+              <button
+                onClick={() => this.handleReplies(post.id)}
+                className="post-action"
+              >
+                {displayReplies ? <ChevronUp /> : <ChevronDown />}
+                <span>{`${post.reply_count} ${
+                  post.reply_count === 1 ? "Reply" : "Replies"
+                }`}</span>
+              </button>
+            </div>
+          )}
         </div>
         {displayReply && (
           <WritePost
-            proposal={proposal}
+            topicId={post.topic_id}
             parent={post.post_number}
-            getPosts={getPosts}
-            handleReply={this.handleReply}
+            promise={() => API.getPostReplies(post.id)}
+            callback={this.handleReply}
           />
         )}
-        {/* {post.children.length > 0 && (
+        {displayReplies && post.replies.length > 0 && (
           <div className="post-replies">
-            {post.children.map((child) => (
-              <SinglePost
-                key={child.id}
-                post={child}
-                proposal={proposal}
-                authUser={authUser}
-                getPosts={getPosts}
-              />
+            {post.replies.map((reply) => (
+              <SinglePost key={reply.id} post={reply} />
             ))}
           </div>
-        )} */}
+        )}
       </div>
     );
   }
 
   render() {
-    const { proposal } = this.state;
-    const { authUser } = this.props;
-    if (!authUser || !authUser.id || !proposal || !proposal.id) return null;
-
     return this.renderContent();
   }
 }
