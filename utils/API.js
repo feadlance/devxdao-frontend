@@ -173,6 +173,21 @@ class API {
     return sendRequest(`/user/discourse/posts/${id}`, {}, "DELETE", true);
   }
 
+  // Flag Topic
+  static flagTopic(id, params) {
+    return sendRequest(
+      `/user/discourse/topics/${id}/flag`,
+      params,
+      "POST",
+      true
+    );
+  }
+
+  // Read Topic
+  static readTopic(id) {
+    return sendRequest(`/user/discourse/topics/${id}/readed`, {}, "PUT", true);
+  }
+
   // Like or Unlike Post
   static reactPost(id) {
     return sendRequest(`/user/discourse/posts/${id}/react`, {}, "PUT", true);

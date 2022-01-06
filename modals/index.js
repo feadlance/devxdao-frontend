@@ -34,6 +34,7 @@ import KycGrantModal from "./kyc-grant/KycGrant";
 import ShowDeniedComplianceModal from "./show-denied-compliance/ShowDeniedCompliance";
 import ShuftiRefChangeModal from "./shufti-ref-change/ShuftiRefChange";
 import MultipleMilestoneSubmitModal from "./multiple-milestone-submit/MultipleMilestoneSubmit";
+import TopicFlagModal from "./topic-flag/TopicFlag";
 
 export {
   UserReviewModal,
@@ -72,4 +73,5 @@ export {
   KycGrantModal,
   ResendKycModal,
   ShowDeniedComplianceModal,
+  TopicFlagModal,
 };

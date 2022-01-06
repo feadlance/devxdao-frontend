@@ -1,7 +1,14 @@
 /* eslint-disable no-undef */
 import moment from "moment";
 import React, { Component } from "react";
-import { ChevronDown, ChevronUp, Edit, Heart, Trash } from "react-feather";
+import {
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  Flag,
+  Heart,
+  Trash,
+} from "react-feather";
 import BeatLoader from "react-spinners/BeatLoader";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -299,7 +306,13 @@ class SinglePost extends Component {
               handleEdit={this.updateEdit}
             />
           ) : (
-            <div className="post-content">
+            <div className={`post-content ${post.flag ? "flag-content" : ""}`}>
+              {post.flag && (
+                <div className="flag-wrapper">
+                  <Flag />
+                  <span>as flag</span>
+                </div>
+              )}
               <div
                 className="post-text"
                 dangerouslySetInnerHTML={{ __html: post.cooked }}

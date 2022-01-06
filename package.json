@@ -53,7 +53,8 @@
     "remark-breaks": "^3.0.2",
     "styled-components": "^5.2.1",
     "wallet-address-validator": "^0.2.4",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "react-circular-progressbar": "^2.0.4"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
